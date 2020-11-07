@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import os
 
 """
 Arguments needed:
@@ -15,8 +16,12 @@ Arguments needed:
         - keyboard layout / -l
 """
 
-def main():
+def encode(lang, inputFile, outputFile):
     return
+
+
+def main():
+    print(os.system('pwd'))
 
 if __name__ == "__main__":
     main()
