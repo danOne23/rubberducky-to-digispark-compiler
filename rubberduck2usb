@@ -1,0 +1,22 @@
+#!/usr/bin/python3
+
+"""
+Arguments needed:
+    - duck2spark:
+        - input file / -i
+        - output file / -o
+        - loop count / -l
+        - delay before run / -f
+        - delay between loop runs / -r
+        - Dont blink LED after execution / -n
+    - USB-rubber-ducky-encoder:
+        - input file / -i
+        - output file / -o
+        - keyboard layout / -l
+"""
+
+def main():
+    return
+
+if __name__ == "__main__":
+    main()
