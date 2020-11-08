@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os
+import json
 
 """
 Arguments needed:
@@ -19,8 +20,24 @@ Arguments needed:
 """
 
 
+def loadSettings():
+    parsedSettings = None
+    try:
+        with open("settings.json", "r") as settingsFile:
+            parsedSettings = json.load(settingsFile)
+            return parsedSettings
+    except FileNotFoundError as e:
+        return 0
+
+
 def main():
-    
+    settings = loadSettings()
+
+    # Exit if error
+    if settings == 0:
+        print("Error: Settings file not found")
+        exit()
+
 
 if __name__ == "__main__":
     main()
