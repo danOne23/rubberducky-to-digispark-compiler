@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os
 import json
+import sys
 
 """
 Arguments needed:
@@ -16,7 +17,10 @@ Arguments needed:
         - output file / -o
         - keyboard layout / -l
 
-    command to run: java -jar /opt/USB-Rubber-Ducky/Encoder/encoder.jar -i /mnt/files/dev/rubberDucky/test/test.duck -o raw.bin -l no && python2 /opt/duck2spark/duck2spark.py -i raw.bin -o sketch.ino && rm raw.bin
+    commands to run:
+    - java -jar /opt/USB-Rubber-Ducky/Encoder/encoder.jar -i /mnt/files/dev/rubberDucky/test/test.duck -o raw.bin -l no
+    - python2 /opt/duck2spark/duck2spark.py -i raw.bin -o sketch.ino
+    - rm raw.bin
 """
 
 
@@ -27,17 +31,105 @@ def loadSettings():
             parsedSettings = json.load(settingsFile)
             return parsedSettings
     except FileNotFoundError as e:
-        return 0
-
-
-def main():
-    settings = loadSettings()
-
-    # Exit if error
-    if settings == 0:
         print("Error: Settings file not found")
         exit()
 
 
+def setValues(args, helpMessage):
+    inputFile = outputFile = loopCount = delayBeforeRun = delayBetweenLoops = keyboardLanguage = None
+
+    blinkLED = True
+    for i, arg in enumerate(args, 1):
+        if arg == "--help":
+            print(helpMessage)
+            exit()
+            return
+
+        if arg == "-n":
+            blinkLED = False
+            continue
+
+        if arg == "-i":
+            inputFile = args[i]
+            continue
+
+        if arg == "-o":
+            outputFile = args[i]
+            continue
+
+        if arg == "-c":
+            loopCount = args[i]
+            continue
+
+        if arg == "-d":
+            delayBeforeRun = args[i]
+            continue
+
+        if arg == "-l":
+            keyboardLanguage = args[i]
+            continue
+
+        if arg == "-b":
+            delayBetweenLoops = args[i]
+            continue
+
+    # Check if args are right
+    try:
+        open(inputFile, "r")
+    except FileNotFoundError as e:
+        print("Error: input file not found")
+        exit()
+
+
+    return inputFile, outputFile, loopCount, delayBeforeRun, delayBetweenLoops, keyboardLanguage, blinkLED
+
+
+def encodeInputFile(inputFile, encoderOutputFile, keyboardLanguage, encoderPath):
+    os.system("java -jar {} -i {} -o {} -l {}".format(encoderPath,
+                                                      inputFile, encoderOutputFile, keyboardLanguage))
+    return
+
+
+def compileToArduinoSketch(duck2sparkPath, encoderOutputFile, outputFile, loopCount, delayBeforeRun, delayBetweenLoops, blinkLED):
+    command = "python2 {} -i {} -o {} -l {} -f {} -r {}".format(
+        duck2sparkPath, encoderOutputFile, outputFile, loopCount, delayBeforeRun, delayBetweenLoops)
+    if blinkLED:
+        command += " -n"
+
+    os.system(command)
+    return
+
+
+def deleteEncoderOutput(encoderOutputFile):
+    os.system("rm {}".format(encoderOutputFile))
+    return
+
+
+def main(args):
+
+
+    helpMessage = "Option:            Description:\n-n                 Do not blink status LED on complete [optional]\n-i                 Input file\n-o                 Output file\n-c                 Number of loops (-1 for infinite)\n-d                 Delay before run\n-l                 Keyboard language\n-b                 Delay between loops\n--help             Display this message"
+    if len(args) < 13:
+        print(helpMessage)
+        exit()
+
+    settings = loadSettings()
+
+    inputFile, outputFile, loopCount, delayBeforeRun, delayBetweenLoops, keyboardLanguage, blinkLED = setValues(
+        args, helpMessage)
+    encodeInputFile(inputFile, settings['EncoderOutputFileName'],
+                    keyboardLanguage, settings['EncoderPath'])
+    print("Encoded file")
+    compileToArduinoSketch(settings['duck2sparkPath'], settings['EncoderOutputFileName'],
+                           outputFile, loopCount, delayBeforeRun, delayBetweenLoops, blinkLED)
+    print("Compiled encoded file to arduino sketch")
+
+    if settings['deleteEncoderOutput']:
+        deleteEncoderOutput(settings['EncoderOutputFileName'])
+        print("Removed encoded file")
+
+    return
+
+
 if __name__ == "__main__":
-    main()
+    main(sys.argv)

@@ -1,4 +1,6 @@
 {
     "EncoderPath": "/opt/USB-Rubber-Ducky/Encoder/encoder.jar",
-    "duck2sparkPath": "/opt/duck2spark/duck2spark.py"
+    "duck2sparkPath": "/opt/duck2spark/duck2spark.py",
+    "EncoderOutputFileName": "raw.bin",
+    "deleteEncoderOutput": true
 }
