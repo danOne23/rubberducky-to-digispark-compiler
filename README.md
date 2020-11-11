@@ -19,3 +19,8 @@ Python3
 ```sudo git clone https://github.com/danOne23/rubberducky-to-digispark-compiler.git```
 
 ```sudo ln -s /opt/rubberducky-to-digispark-compiler/duck2digi /usr/bin```
+
+
+
+
+The script is configured for the /opt directory
