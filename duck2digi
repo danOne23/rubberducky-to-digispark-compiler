@@ -3,31 +3,11 @@ import os
 import json
 import sys
 
-"""
-Arguments needed:
-    - duck2spark:
-        - input file / -i
-        - output file / -o
-        - loop count / -l
-        - delay before run / -f
-        - delay between loop runs / -r
-        - Dont blink LED after execution / -n
-    - USB-rubber-ducky-encoder:
-        - input file / -i
-        - output file / -o
-        - keyboard layout / -l
-
-    commands to run:
-    - java -jar /opt/USB-Rubber-Ducky/Encoder/encoder.jar -i /mnt/files/dev/rubberDucky/test/test.duck -o raw.bin -l no
-    - python2 /opt/duck2spark/duck2spark.py -i raw.bin -o sketch.ino
-    - rm raw.bin
-"""
-
 
 def loadSettings():
     parsedSettings = None
     try:
-        with open("settings.json", "r") as settingsFile:
+        with open(os.path.dirname(os.path.realpath(__file__)) + "/settings.json", "r") as settingsFile:
             parsedSettings = json.load(settingsFile)
             return parsedSettings
     except FileNotFoundError as e:
